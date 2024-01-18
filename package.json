@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "keywords": [],
-  "main": "app.ts",
+  "main": "app.js",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/SpamJacket/mesto"
   },
   "scripts": {
     "start": "ts-node src/app.ts",

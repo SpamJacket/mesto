@@ -1,13 +1,19 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import 'dotenv/config';
+import usersRouter from './routes/users';
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.listen(PORT, () => {
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+
+app.use('/users', usersRouter);
+
+app.listen(+PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
