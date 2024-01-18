@@ -15,3 +15,25 @@ export const createUser = (req: Request, res: Response) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
+
+export const updateProfile = (req: Request, res: Response) => {
+  const { name, about, avatar } = req.body;
+  return User.findByIdAndUpdate(
+    req.user._id,
+    { name, about, avatar },
+    { new: true, runValidators: true },
+  )
+    .then((user) => res.status(200).send({ data: user }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+export const updateAvatar = (req: Request, res: Response) => {
+  const { avatar } = req.body;
+  return User.findByIdAndUpdate(
+    req.user._id,
+    { avatar },
+    { new: true, runValidators: true },
+  )
+    .then((user) => res.status(200).send({ data: user }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
