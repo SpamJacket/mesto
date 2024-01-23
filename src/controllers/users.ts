@@ -1,39 +1,86 @@
-import { Request, Response } from 'express';
-import User from '../models/user';
+import { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+import User from "../models/user";
+import NotFoundError from "../errors/not-found-err";
 
-export const getUsers = (req: Request, res: Response) => User.find({})
-  .then((users) => res.status(200).send({ data: users }))
-  .catch((err) => res.status(500).send({ message: err.message }));
-
-export const getUser = (req: Request, res: Response) => User.findById(req.params.id)
-  .then((user) => res.status(200).send({ data: user }))
-  .catch((err) => res.status(500).send({ message: err.message }));
-
-export const createUser = (req: Request, res: Response) => {
-  const { name, about, avatar } = req.body;
-  return User.create({ name, about, avatar })
-    .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+export const getUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const users = await User.find({});
+    return res.status(StatusCodes.OK).send({ data: users });
+  } catch (err) {
+    return next(err);
+  }
 };
 
-export const updateProfile = (req: Request, res: Response) => {
-  const { name, about, avatar } = req.body;
-  return User.findByIdAndUpdate(
-    req.user._id,
-    { name, about, avatar },
-    { new: true, runValidators: true },
-  )
-    .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId).orFail(
+      () => new NotFoundError("Запрашиваемый пользователь не найден")
+    );
+
+    return res.status(StatusCodes.OK).send({ data: user });
+  } catch (err) {
+    return next(err);
+  }
 };
 
-export const updateAvatar = (req: Request, res: Response) => {
-  const { avatar } = req.body;
-  return User.findByIdAndUpdate(
-    req.user._id,
-    { avatar },
-    { new: true, runValidators: true },
-  )
-    .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+export const createUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { name, about, avatar } = req.body;
+    const user = await User.create({ name, about, avatar });
+    return res.status(StatusCodes.CREATED).send({ data: user });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { name, about, avatar } = req.body;
+    const userId = req.user._id;
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { name, about, avatar },
+      { new: true, runValidators: true }
+    ).orFail(() => new NotFoundError("Запрашиваемый пользователь не найден"));
+    return res.status(StatusCodes.OK).send({ data: user });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const updateAvatar = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { avatar } = req.body;
+    const userId = req.user._id;
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { avatar },
+      { new: true, runValidators: true }
+    ).orFail(() => new NotFoundError("Запрашиваемый пользователь не найден"));
+    return res.status(StatusCodes.OK).send({ data: user });
+  } catch (err) {
+    return next(err);
+  }
 };
