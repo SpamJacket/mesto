@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
+import { MongoServerError } from "mongodb";
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import NotFoundError from "./not-found-err";
+import AuthError from "./auth-err";
 
 export default (
   err: unknown,
@@ -11,17 +13,29 @@ export default (
   next: NextFunction
 ) => {
   if (err instanceof NotFoundError) {
-    res.status(err.statusCode).send({ message: err.message });
+    return res.status(err.statusCode).send({ message: err.message });
+  }
+
+  if (err instanceof AuthError) {
+    return res.status(err.statusCode).send({ message: err.message });
   }
 
   if (err instanceof mongoose.Error.CastError) {
-    res.status(StatusCodes.BAD_REQUEST).send({ message: "Невалидный id" });
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .send({ message: "Невалидный id" });
   }
 
   if (err instanceof mongoose.Error.ValidationError) {
-    res
+    return res
       .status(StatusCodes.BAD_REQUEST)
       .send({ message: "Переданы некорректные данные" });
+  }
+
+  if (err instanceof MongoServerError && err.code === 11000) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .send({ message: "Такой адрес почты уже зарегистрирован" });
   }
 
   return res
