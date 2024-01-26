@@ -12,14 +12,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "65a97ea483ec892c8df70f4a",
-  };
-
-  next();
-});
-
 app.use(router);
 
 app.use(errorHandler);

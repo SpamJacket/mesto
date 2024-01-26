@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import NotFoundError from "./not-found-err";
 import AuthError from "./auth-err";
+import AccessError from "./access-err";
 
 export default (
   err: unknown,
@@ -17,6 +18,10 @@ export default (
   }
 
   if (err instanceof AuthError) {
+    return res.status(err.statusCode).send({ message: err.message });
+  }
+
+  if (err instanceof AccessError) {
     return res.status(err.statusCode).send({ message: err.message });
   }
 
