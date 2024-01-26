@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import "dotenv/config";
 import router from "./routes/index";
 import errorHandler from "./errors/index";
+import { requestLogger, errorLogger } from "./middlewares/logger";
 
 const { PORT = 3000, MONGO_URL = "mongodb://127.0.0.1:27017/mestodb" } =
   process.env;
@@ -12,7 +13,11 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(requestLogger);
+
 app.use(router);
+
+app.use(errorLogger);
 
 app.use(errorHandler);
 

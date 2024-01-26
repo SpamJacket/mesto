@@ -35,6 +35,7 @@ const userSchema = new Schema<IUser>(
     password: {
       type: String,
       required: true,
+      select: false,
     },
     name: {
       type: String,
@@ -70,23 +71,25 @@ const userSchema = new Schema<IUser>(
     versionKey: false,
     statics: {
       async findUserByCredentials(email: string, password: string) {
-        return this.findOne({ email }).then((user) => {
-          if (!user) {
-            return Promise.reject(
-              new AuthError("Неправильные почта или пароль")
-            );
-          }
-
-          return bcrypt.compare(password, user.password).then((matched) => {
-            if (!matched) {
+        return this.findOne({ email })
+          .select("+password")
+          .then((user) => {
+            if (!user) {
               return Promise.reject(
                 new AuthError("Неправильные почта или пароль")
               );
             }
 
-            return user;
+            return bcrypt.compare(password, user.password).then((matched) => {
+              if (!matched) {
+                return Promise.reject(
+                  new AuthError("Неправильные почта или пароль")
+                );
+              }
+
+              return user;
+            });
           });
-        });
       },
     },
   }
