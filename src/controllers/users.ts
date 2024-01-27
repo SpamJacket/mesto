@@ -101,14 +101,13 @@ export const updateProfile = async (
   next: NextFunction
 ) => {
   try {
-    const { name, about, avatar }: { [key: string]: string } = req.body;
+    const { body }: { body: { [key: string]: string } } = req;
     const userId = req.user._id;
 
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { name, about, avatar },
-      { new: true, runValidators: true }
-    ).orFail(() => new NotFoundError("Запрашиваемый пользователь не найден"));
+    const user = await User.findByIdAndUpdate(userId, body, {
+      new: true,
+      runValidators: true,
+    }).orFail(() => new NotFoundError("Запрашиваемый пользователь не найден"));
 
     return res
       .status(StatusCodes.OK)

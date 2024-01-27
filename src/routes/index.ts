@@ -10,29 +10,25 @@ const router = Router();
 router.post(
   "/signin",
   celebrate({
-    body: Joi.object()
-      .keys({
-        email: Joi.string().email().required(),
-        password: Joi.string().required(),
-      })
-      .unknown(true),
+    body: Joi.object().keys({
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
+    }),
   }),
   login
 );
 router.post(
   "/signup",
   celebrate({
-    body: Joi.object()
-      .keys({
-        email: Joi.string().email().required(),
-        password: Joi.string().required(),
-        name: Joi.string().min(2).max(30),
-        about: Joi.string().min(2).max(200),
-        avatar: Joi.string().uri({
-          scheme: ["jpeg", "jpg", "png", "bmp", "svg"],
-        }),
-      })
-      .unknown(true),
+    body: Joi.object().keys({
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(200),
+      avatar: Joi.string().uri({
+        scheme: ["jpeg", "jpg", "png", "bmp", "svg"],
+      }),
+    }),
   }),
   createUser
 );
