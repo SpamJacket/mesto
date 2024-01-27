@@ -1,5 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
+import { errors } from "celebrate";
 import "dotenv/config";
 import router from "./routes/index";
 import errorHandler from "./errors/index";
@@ -13,11 +15,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(cookieParser());
+
 app.use(requestLogger);
 
 app.use(router);
 
 app.use(errorLogger);
+
+app.use(errors());
 
 app.use(errorHandler);
 

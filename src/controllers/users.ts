@@ -156,7 +156,7 @@ export const login = async (
 
     return res
       .status(StatusCodes.OK)
-      .cookie("jwt", token, {
+      .cookie("accessToken", `Bearer ${token}`, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
         sameSite: true,

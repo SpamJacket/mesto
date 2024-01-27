@@ -11,7 +11,7 @@ interface JwtPayload {
 const { JWT_SECRET = "some-secret-key" } = process.env;
 
 export default (req: Request, res: Response, next: NextFunction) => {
-  const { accessToken }: { [key: string]: string } = req.body;
+  const { accessToken }: { [key: string]: string } = req.cookies;
 
   if (!accessToken || !accessToken.startsWith("Bearer ")) {
     throw new AuthError("Необходима авторизация");

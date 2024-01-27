@@ -39,7 +39,7 @@ export default (
 
   if (err instanceof MongoServerError && err.code === 11000) {
     return res
-      .status(StatusCodes.BAD_REQUEST)
+      .status(StatusCodes.CONFLICT)
       .send({ message: "Такой адрес почты уже зарегистрирован" });
   }
 

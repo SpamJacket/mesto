@@ -1,5 +1,5 @@
 import { Model, Schema, Types, model } from "mongoose";
-import { isEmail, isLength, isURL } from "validator";
+import { isEmail } from "validator";
 import bcrypt from "bcryptjs";
 import AuthError from "../errors/auth-err";
 
@@ -41,26 +41,21 @@ const userSchema = new Schema<IUser>(
       type: String,
       minlength: 2,
       maxlength: 30,
-      validate: {
-        validator: (v: string) => isLength(v, { min: 2, max: 30 }),
-        message: () => "Длина имени должна быть от 2 до 30 символов",
-      },
       default: "Жак-Ив Кусто",
     },
     about: {
       type: String,
       minlength: 2,
       maxlength: 200,
-      validate: {
-        validator: (v: string) => isLength(v, { min: 2, max: 200 }),
-        message: () => "Слишком длинное или слишком короткое",
-      },
       default: "Исследователь",
     },
     avatar: {
       type: String,
       validate: {
-        validator: (v: string) => isURL(v),
+        validator: (v: string) =>
+          /https?:\/\/(www\.)?[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]{1,256}\.[a-zA-Z0-9]{1,6}([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
+            v
+          ),
         message: (props) => `${props.value} не является ссылкой`,
       },
       default:

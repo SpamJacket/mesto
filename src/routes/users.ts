@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { celebrate, Joi } from "celebrate";
 import {
   getUsers,
   getUser,
@@ -11,8 +12,47 @@ const router = Router();
 
 router.get("/", getUsers);
 router.get("/me", getCurrentUser);
-router.get("/:userId", getUser);
-router.patch("/me", updateProfile);
-router.patch("/me/avatar", updateAvatar);
+router.get(
+  "/:userId",
+  celebrate({
+    params: Joi.object().keys({
+      userId: Joi.string().alphanum(),
+    }),
+  }),
+  getUser
+);
+
+router.patch(
+  "/me",
+  celebrate({
+    body: Joi.object()
+      .keys({
+        name: Joi.string().min(2).max(30).required(),
+        about: Joi.string().min(2).max(200).required(),
+        avatar: Joi.string()
+          .uri({
+            scheme: ["jpeg", "jpg", "png", "bmp", "svg"],
+          })
+          .required(),
+      })
+      .unknown(true),
+  }),
+  updateProfile
+);
+router.patch(
+  "/me/avatar",
+  celebrate({
+    body: Joi.object()
+      .keys({
+        avatar: Joi.string()
+          .uri({
+            scheme: ["jpeg", "jpg", "png", "bmp", "svg"],
+          })
+          .required(),
+      })
+      .unknown(true),
+  }),
+  updateAvatar
+);
 
 export default router;
