@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
-import { ObjectId } from 'mongoose';
+import { Types } from "mongoose";
+import jwt from "jsonwebtoken";
 
-declare global{
+declare global {
   namespace Express {
     interface Request {
-      user: { _id: string | ObjectId }
+      user: { _id: string | Types.ObjectId };
     }
   }
 }

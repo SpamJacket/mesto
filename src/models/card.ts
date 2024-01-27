@@ -1,5 +1,4 @@
 import { Schema, model, Types } from "mongoose";
-import { isURL, isLength } from "validator";
 
 interface Card {
   name: string;
@@ -16,16 +15,15 @@ const cardSchema = new Schema<Card>(
       required: true,
       minlength: 2,
       maxlength: 30,
-      validate: {
-        validator: (v: string) => isLength(v, { min: 2, max: 30 }),
-        message: () => "Длина названия должна быть от 2 до 30 символов",
-      },
     },
     link: {
       type: String,
       required: true,
       validate: {
-        validator: (v: string) => isURL(v),
+        validator: (v: string) =>
+          /https?:\/\/(www\.)?[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]{1,256}\.[a-zA-Z0-9]{1,6}([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
+            v
+          ),
         message: (props) => `${props.value} не является ссылкой`,
       },
     },

@@ -1,8 +1,11 @@
 import express from "express";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
+import { errors } from "celebrate";
 import "dotenv/config";
 import router from "./routes/index";
 import errorHandler from "./errors/index";
+import { requestLogger, errorLogger } from "./middlewares/logger";
 
 const { PORT = 3000, MONGO_URL = "mongodb://127.0.0.1:27017/mestodb" } =
   process.env;
@@ -12,15 +15,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "65a97ea483ec892c8df70f4a",
-  };
+app.use(cookieParser());
 
-  next();
-});
+app.use(requestLogger);
 
 app.use(router);
+
+app.use(errorLogger);
+
+app.use(errors());
 
 app.use(errorHandler);
 
