@@ -1,8 +1,10 @@
+import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import Card from "../models/card";
 import NotFoundError from "../errors/not-found-err";
 import AccessError from "../errors/access-err";
+import IncorrectDataError from "../errors/incorrect-data-err";
 
 export const getCards = async (
   req: Request,
@@ -34,6 +36,10 @@ export const createCard = async (
       .status(StatusCodes.CREATED)
       .send({ data: card, message: "Карточка успешно создана" });
   } catch (err) {
+    if (err instanceof mongoose.Error.ValidationError) {
+      return next(new IncorrectDataError("Переданы некорректные данные"));
+    }
+
     return next(err);
   }
 };
@@ -61,6 +67,10 @@ export const deleteCard = async (
       .status(StatusCodes.OK)
       .send({ data: deletedCard, message: "Карточка успешно удалена" });
   } catch (err) {
+    if (err instanceof mongoose.Error.CastError) {
+      return next(new IncorrectDataError("Невалидный id"));
+    }
+
     return next(err);
   }
 };
@@ -84,6 +94,10 @@ export const likeCard = async (
       .status(StatusCodes.OK)
       .send({ data: card, message: "Лайк поставлен" });
   } catch (err) {
+    if (err instanceof mongoose.Error.CastError) {
+      return next(new IncorrectDataError("Невалидный id"));
+    }
+
     return next(err);
   }
 };
@@ -107,6 +121,10 @@ export const dislikeCard = async (
       .status(StatusCodes.OK)
       .send({ data: card, message: "Лайк убран" });
   } catch (err) {
+    if (err instanceof mongoose.Error.CastError) {
+      return next(new IncorrectDataError("Невалидный id"));
+    }
+
     return next(err);
   }
 };

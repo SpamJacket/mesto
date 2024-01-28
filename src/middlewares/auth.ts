@@ -13,15 +13,14 @@ const { JWT_SECRET = "some-secret-key" } = process.env;
 export default (req: Request, res: Response, next: NextFunction) => {
   const { accessToken }: { [key: string]: string } = req.cookies;
 
-  if (!accessToken || !accessToken.startsWith("Bearer ")) {
+  if (!accessToken) {
     throw new AuthError("Необходима авторизация");
   }
 
-  const token: string = accessToken.replace("Bearer ", "");
   let payload: JwtPayload | null = null;
 
   try {
-    payload = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    payload = jwt.verify(accessToken, JWT_SECRET) as JwtPayload;
   } catch (err) {
     return next(new AuthError("Необходима авторизация"));
   }
